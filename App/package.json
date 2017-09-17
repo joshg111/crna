@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "reactotron-apisauce": "^1.12.2",
+    "reactotron-redux": "^1.12.2"
+  }
+}
