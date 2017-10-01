@@ -7,51 +7,30 @@ import { connect } from 'react-redux'
 import ActivateUserActions from '../Redux/ActivateUserRedux'
 import { NavigationActions } from 'react-navigation'
 
-// import { Actions as NavigationActions } from 'react-native-router-flux'
-
-// 8/20/17: We should use a different button, since exponent may not
-// easily support react-native-material-design. Commenting out for now.
-// import { Button } from 'react-native-material-design'
-
 import LoginActions from '../Redux/LoginRedux'
 
 import t from 'tcomb-form-native'
 
-// Styles
-// import {styles, stylesheet} from './Styles/ActivateUserStyle'
 
-// const Type = t.struct({
-//   activation_code: t.Number
-// })
-//
-// const options = {
-//   auto: "placeholders",
-// };
-//
-// var Form = t.form.Form;
-
-
-
-type FLowCardProps = {
+type FlowCardProps = {
   dispatch: () => any,
-  attemptLogout: () => void,
-  user_id: string,
-  navigation: Object
+  navigation: Object,
+  item: {
+    creator: string,
+    flowid: string,
+    image: string,
+    requestid: string,
+    theme: string,
+    timestamp: string
+  }
 }
 
-const resetAction = NavigationActions.reset({
-  index: 0,
-  actions: [
-    NavigationActions.navigate({ routeName: 'LoginScreen'})
-  ]
-});
+class FlowCard extends React.Component {
 
-class FLowCard extends React.Component {
-
-  props: FLowCardProps
+  props: FlowCardProps
 
   state: {}
-  constructor (props: FLowCardProps) {
+  constructor (props: FlowCardProps) {
     super(props);
     this.state = {};
   }
@@ -61,15 +40,25 @@ class FLowCard extends React.Component {
 
   }
 
+  onPressImage() {
+    // Navigate to the details flow
+    const {requestid, flowid} = this.props.item;
+    this.props.navigation.navigate('FlowDetails', {flowid, requestid});
+  }
+
+
   render () {
+    const {creator, image, theme, timestamp} = this.props.item;
     return (
       <View style={styles.container}>
         <View style={styles.subject}>
-          <Text>{"User Name"}</Text>
-          <Text>{"Flow Title"}</Text>
-          <Text>{"Time of Post"}</Text>
+          <Text style={{margin: 8}}>{creator}</Text>
+          <Text style={{margin: 8}}>{timestamp}</Text>
         </View>
-        <TouchableOpacity onPress={() => {}} style={{flex:1}}>
+        <View style={styles.subject}>
+          <Text style={{margin: 8}}>{theme}</Text>
+        </View>
+        <TouchableOpacity onPress={this.onPressImage.bind(this)} style={{flex:1}}>
           <Image
             style={{flex: 1, width: undefined, height: undefined, backgroundColor: 'purple'}}
             source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
@@ -100,7 +89,7 @@ const styles = StyleSheet.create({
   subject: {
     flex: .1,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'pink'
   },
@@ -138,4 +127,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(FLowCard)
+export default connect(mapStateToProps, mapDispatchToProps)(FlowCard)

@@ -1,10 +1,11 @@
 // @flow
 import React from 'react'
-import { TextInput, Image, ScrollView, View, Text, TouchableHighlight, Picker, Button } from 'react-native'
+import { StyleSheet, FlatList, TextInput, Image, ScrollView, View, Text, TouchableHighlight, Picker, Button } from 'react-native'
 
 import { connect } from 'react-redux'
 import ActivateUserActions from '../Redux/ActivateUserRedux'
 import { NavigationActions } from 'react-navigation'
+import { Colors, Metrics, ApplicationStyles } from '../Themes/'
 
 // import { Actions as NavigationActions } from 'react-native-router-flux'
 
@@ -12,26 +13,12 @@ import { NavigationActions } from 'react-navigation'
 // easily support react-native-material-design. Commenting out for now.
 // import { Button } from 'react-native-material-design'
 
-import {styles} from './Styles/MyFlowsStyle'
+// import {styles} from './Styles/MyFlowsStyle'
 import FlowCard from './FlowCard'
 
 import LoginActions from '../Redux/LoginRedux'
 
 import t from 'tcomb-form-native'
-
-// Styles
-// import {styles, stylesheet} from './Styles/ActivateUserStyle'
-
-// const Type = t.struct({
-//   activation_code: t.Number
-// })
-//
-// const options = {
-//   auto: "placeholders",
-// };
-//
-// var Form = t.form.Form;
-
 
 
 type MyFlowsProps = {
@@ -94,6 +81,16 @@ class MyFlowsScreen extends React.Component {
     this.props.navigation.navigate('CreateFlowScreen');
   }
 
+  renderItem({item})
+  {
+    return (
+      <FlowCard
+        item={item}
+        navigation={this.props.navigation}
+      />
+    );
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -102,8 +99,12 @@ class MyFlowsScreen extends React.Component {
           title='Create Flow'
           style={{width: 60, height: 60}}
         />
-        <FlowCard/>
-        <FlowCard/>
+        <FlatList
+          data={[{"requestid": "requestid1", "flowid": "myflowid1", "creator": "person1", "image": "myimage", "theme": "mytheme", "timestamp": "mytimestamp" }, {"requestid": "requestid2", "flowid": "myflowid2", "creator": "person2", "image": "myimage", "theme": "Electronics you buy, but don't need", "timestamp": "time does not exist" }]}
+          renderItem={this.renderItem.bind(this)}
+          keyExtractor={(item, index) => index}
+        />
+
         <Text>
           {this.props.user_id}
         </Text>
@@ -112,6 +113,16 @@ class MyFlowsScreen extends React.Component {
     )
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.frost,
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start'
+  }
+})
+
 
 const mapStateToProps = (state) => {
   return {

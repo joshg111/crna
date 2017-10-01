@@ -1,4 +1,4 @@
-import { takeLatest } from 'redux-saga'
+import { takeLatest, all } from 'redux-saga/effects'
 import RegisterApi from '../Services/RegisterApi'
 import LoginApi from '../Services/LoginApi'
 import ActivateUserApi from '../Services/ActivateUserApi'
@@ -25,12 +25,12 @@ const login_api = LoginApi.create();
 /* ------------- Connect Types To Sagas ------------- */
 
 export default function * root () {
-  yield [
+  yield all([
     takeLatest(LoginTypes.LOGIN_REQUEST, login, login_api),
     takeLatest(LoginTypes.LOGOUT, logout),
     takeLatest(LoginTypes.LOGIN_STARTUP, login_startup),
     takeLatest(RegisterTypes.REGISTER_REQUEST, register, registerApi),
     takeLatest(ActivateUserTypes.ACTIVATE_USER_REQUEST, activateUser, ActivateUserApi.create()),
 
-  ]
+  ])
 }

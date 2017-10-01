@@ -8,6 +8,8 @@ import StartupScreen from '../Containers/StartupScreen'
 import RegisterFloto from '../Containers/RegisterFloto'
 import ActivateUser from '../Containers/ActivateUser'
 import MyFlowsScreen from '../Containers/MyFlowsScreen'
+import FlowDetails from '../Containers/FlowDetails'
+import FlowCard from '../Containers/FlowCard'
 import LoginActions from '../Redux/LoginRedux'
 import { connect } from 'react-redux'
 import { StackNavigator } from 'react-navigation';
@@ -18,7 +20,10 @@ const Navigator = StackNavigator({
   RegisterFloto: { screen: RegisterFloto },
   MyFlowsScreen: { screen: MyFlowsScreen },
   LoginScreen: { screen: LoginScreen },
-  CreateFlowScreen: { screen: MyFlowsScreen }
+  CreateFlowScreen: { screen: MyFlowsScreen },
+  FlowDetails: { screen: FlowDetails },
+  FlowCard: {screen: FlowCard}
+
 
 },
 {
