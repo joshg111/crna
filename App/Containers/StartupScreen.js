@@ -61,9 +61,9 @@ class StartupScreen extends Component {
       // Conditionally go to next route.
       if (nextProps.user_id == null) {
         // Go to RegisterFloto
-        // this.props.navigation.dispatch(resetAction);
+        this.props.navigation.dispatch(resetAction);
         // JG 9/16/17: Temporarily route to Flows home screen. 
-        this.props.navigation.dispatch(resetFlowsScreen);
+        // this.props.navigation.dispatch(resetFlowsScreen);
       }
       else {
         // Go to MyFlowsScreen

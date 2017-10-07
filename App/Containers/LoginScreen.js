@@ -35,6 +35,13 @@ const resetAction = NavigationActions.reset({
   ]
 });
 
+const resetFlowsScreen = NavigationActions.reset({
+  index: 0,
+  actions: [
+    NavigationActions.navigate({ routeName: 'MyFlowsScreen'})
+  ]
+});
+
 class LoginScreen extends React.Component {
 
   static navigationOptions = {
@@ -73,9 +80,7 @@ class LoginScreen extends React.Component {
     // Did the login attempt complete?
     // if (this.isAttempting && !newProps.fetching) {
     if (newProps.user_id != null) {
-
-      navigate('MyFlowsScreen');
-      // NavigationActions.my_flows_screen()
+      this.props.navigation.dispatch(resetFlowsScreen);
     }
   }
 
