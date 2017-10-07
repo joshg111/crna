@@ -61,7 +61,7 @@ class FlowCard extends React.Component {
         <TouchableOpacity onPress={this.onPressImage.bind(this)} style={{flex:1}}>
           <Image
             style={{flex: 1, width: undefined, height: undefined, backgroundColor: 'purple'}}
-            source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+            source={{uri: 'https://wallpaperscraft.com/image/planet_light_spots_space_86643_1920x1080.jpg'}}
             resizeMode='contain'
           />
         </TouchableOpacity>

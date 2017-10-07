@@ -5,7 +5,7 @@ import ActivateUserActions from '../Redux/ActivateUserRedux'
 export const selectUserId = (state) => state.login.user_id
 
 // attempts to login
-export function * activateUser (api, action) {
+const activateUser = function * activateUser (api, action) {
   const user_id = yield select(selectUserId)
 
   const response = yield call(api.activateUser, user_id, action.activation_code)
@@ -22,3 +22,4 @@ export function * activateUser (api, action) {
 
   }
 }
+export {activateUser};

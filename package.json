@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "jest-expo": "~1.0.1",
-    "react-native-scripts": "0.0.30",
-    "react-test-renderer": "16.0.0-alpha.6",
+    "jest-expo": "~21.0.2",
+    "react-native-scripts": "1.5.0",
+    "react-test-renderer": "16.0.0",
     "reactotron-react-native": "^1.12.2"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
@@ -21,16 +21,16 @@
   },
   "dependencies": {
     "apisauce": "^0.14.1",
-    "expo": "^17.0.0",
+    "expo": "^21.0.2",
     "google-libphonenumber": "^3.0.0",
     "ramda": "^0.24.1",
-    "react": "16.0.0-alpha.6",
-    "react-native": "^0.44.0",
+    "react": "16.0.0-alpha.12",
+    "react-native": "0.48.4",
     "react-native-country-picker-modal": "^0.3.0",
     "react-navigation": "^1.0.0-beta.11",
     "react-redux": "^5.0.6",
     "redux-saga": "^0.15.6",
-    "reduxsauce": "^0.6.0",
+    "reduxsauce": "^0.7.0",
     "seamless-immutable": "^7.1.2",
     "tcomb-form-native": "^0.6.9"
   }

@@ -4,7 +4,7 @@ import LoginActions from '../Redux/LoginRedux'
 import {getCache, setCache, removeCache} from '../Services/LocalStorage'
 
 // attempts to login
-export function * register (api, action) {
+const register = function * register (api, action) {
   const response = yield call(api.regUser, action.username, action.email, action.phone_number, action.password)
   console.log("before print response");
   console.log(response);
@@ -24,3 +24,5 @@ export function * register (api, action) {
 
   }
 }
+
+export {register};

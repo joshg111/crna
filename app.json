@@ -1,9 +1,9 @@
 {
   "expo": {
-    "sdkVersion": "17.0.0",
+    "sdkVersion": "21.0.0",
     "androidStatusBar": {
       "barStyle": "light-content",
-      "backgroundColor": "#334393"
+      "backgroundColor": "#C2185B"
     }
   },
 

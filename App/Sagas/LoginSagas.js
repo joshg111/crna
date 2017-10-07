@@ -3,7 +3,7 @@ import LoginActions from '../Redux/LoginRedux'
 import {getCache, setCache, removeCache} from '../Services/LocalStorage'
 
 // attempts to login
-export function * login (api, { username, password }) {
+const login = function * login (api, { username, password }) {
   if (password === '') {
     // dispatch failure
     yield put(LoginActions.loginFailure('LOGIN FAILED, password is empty'))
@@ -27,7 +27,7 @@ export function * login (api, { username, password }) {
 }
 
 // Initialize user_id from AsyncStorage
-export function * login_startup () {
+const login_startup = function * login_startup () {
 
     // Dispatch successful login startup
     const user_id = yield call(getCache, 'login->user_id');
@@ -37,9 +37,11 @@ export function * login_startup () {
 }
 
 // Initialize user_id from AsyncStorage
-export function * logout () {
+const logout = function * logout () {
     // Dispatch successful login startup
     yield call(removeCache, 'login->user_id');
     yield put(LoginActions.logoutSuccess())
 
 }
+
+export {login, login_startup, logout};

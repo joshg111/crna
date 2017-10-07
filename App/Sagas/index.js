@@ -24,7 +24,7 @@ const login_api = LoginApi.create();
 
 /* ------------- Connect Types To Sagas ------------- */
 
-export default function * root () {
+const root = function * root () {
   yield all([
     takeLatest(LoginTypes.LOGIN_REQUEST, login, login_api),
     takeLatest(LoginTypes.LOGOUT, logout),
@@ -34,3 +34,5 @@ export default function * root () {
 
   ])
 }
+
+export default root;
