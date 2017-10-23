@@ -10,6 +10,8 @@ import ActivateUser from '../Containers/ActivateUser'
 import MyFlowsScreen from '../Containers/MyFlowsScreen'
 import FlowDetails from '../Containers/FlowDetails'
 import FlowCard from '../Containers/FlowCard'
+import CreateFlowScreen from '../Containers/CreateFlowScreen'
+import VerifyCameraPhoto from '../Containers/VerifyCameraPhoto'
 import LoginActions from '../Redux/LoginRedux'
 import { connect } from 'react-redux'
 import { StackNavigator } from 'react-navigation';
@@ -20,7 +22,8 @@ const Navigator = StackNavigator({
   RegisterFloto: { screen: RegisterFloto },
   MyFlowsScreen: { screen: MyFlowsScreen },
   LoginScreen: { screen: LoginScreen },
-  CreateFlowScreen: { screen: MyFlowsScreen },
+  CreateFlowScreen: { screen: CreateFlowScreen },
+  VerifyCameraPhoto: { screen: VerifyCameraPhoto },
   FlowDetails: { screen: FlowDetails },
   FlowCard: {screen: FlowCard}
 
