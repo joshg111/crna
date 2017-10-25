@@ -38,7 +38,7 @@ const resetAction = NavigationActions.reset({
 class MyFlowsScreen extends React.Component {
 
   static navigationOptions = {
-      title: 'My Flows',
+      title: 'My Flows'
     };
 
 
@@ -56,11 +56,6 @@ class MyFlowsScreen extends React.Component {
 
   componentWillReceiveProps (newProps) {
     this.forceUpdate()
-
-    console.log("MyFlowScreen newProps = ");
-    console.log(newProps);
-    console.log("newProps.user_id = ");
-    console.log(newProps.user_id == null)
 
     if (newProps.user_id == null)
     {

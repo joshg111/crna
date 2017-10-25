@@ -11,7 +11,7 @@ import MyFlowsScreen from '../Containers/MyFlowsScreen'
 import FlowDetails from '../Containers/FlowDetails'
 import FlowCard from '../Containers/FlowCard'
 import CreateFlowScreen from '../Containers/CreateFlowScreen'
-import VerifyCameraPhoto from '../Containers/VerifyCameraPhoto'
+import PickContact from '../Containers/PickContact'
 import LoginActions from '../Redux/LoginRedux'
 import { connect } from 'react-redux'
 import { StackNavigator } from 'react-navigation';
@@ -23,7 +23,7 @@ const Navigator = StackNavigator({
   MyFlowsScreen: { screen: MyFlowsScreen },
   LoginScreen: { screen: LoginScreen },
   CreateFlowScreen: { screen: CreateFlowScreen },
-  VerifyCameraPhoto: { screen: VerifyCameraPhoto },
+  PickContact: { screen: PickContact },
   FlowDetails: { screen: FlowDetails },
   FlowCard: {screen: FlowCard}
 

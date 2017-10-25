@@ -55,7 +55,6 @@ class ActivateUser extends React.Component {
     console.log("inside onPress");
     var value = this.refs.form.getValue();
     if (value) { // if validation fails, value will be null
-      console.log(value); // value here is an instance of Person
       console.log("Form validated successfully");
       this.props.attemptActivate(value.activation_code);
 

@@ -141,11 +141,7 @@ class LoginScreen extends React.Component {
   render () {
     const { username, password } = this.state
     const { fetching } = this.props
-    console.log("fetching")
-    console.log(fetching)
-    const editable = !fetching
-    console.log("editable")
-    console.log(editable)
+    const editable = !fetching    
     const textInputStyle = editable ? Styles.textInput : Styles.textInputReadonly
 
     return (

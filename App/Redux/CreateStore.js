@@ -21,6 +21,8 @@ export default (rootReducer, rootSaga) => {
   /* ------------- Logger Middleware ------------- */
 
   const SAGA_LOGGING_BLACKLIST = ['EFFECT_TRIGGERED', 'EFFECT_RESOLVED', 'EFFECT_REJECTED', 'persist/REHYDRATE']
+
+  // Joshuag 10/22/17: Turn off logging
   if (__DEV__) {
     // the logger master switch
     const USE_LOGGING = Config.reduxLogging
@@ -37,8 +39,8 @@ export default (rootReducer, rootSaga) => {
   enhancers.push(applyMiddleware(...middleware))
 
   // in dev mode, we'll create the store through Reactotron
-  console.log(console.tron)
-  console.trace()
+  // console.log(console.tron)
+  // console.trace();
   const createAppropriateStore = __DEV__ ? console.tron.createStore : createStore
   const store = createAppropriateStore(rootReducer, compose(...enhancers))
 

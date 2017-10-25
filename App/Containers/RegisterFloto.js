@@ -151,7 +151,6 @@ class RegisterFloto extends React.Component {
     // Did the login attempt complete?
 
     if (newProps.user_id != null) {
-      console.log("user_id = " + newProps.user_id.toString())
       // 1/9/17: Comment out activate_user since this is cumbersome to test.
       // For now, go straight to MyFlowsScreen
       // NavigationActions.activate_user()
@@ -161,12 +160,8 @@ class RegisterFloto extends React.Component {
   }
 
   onPress () {
-    // call getValue() to get the values of the form
-    console.log("inside onPress");
     var value = this.refs.form.getValue();
     if (value) { // if validation fails, value will be null
-      console.log(value); // value here is an instance of Person
-      console.log("Form validated successfully");
       this.props.attemptReg(value.username, value.email, this.state.country.callingCode + value.phone_number.toString().replace(/\D/g, ''), value.password);
 
 
@@ -184,57 +179,22 @@ class RegisterFloto extends React.Component {
   }
 
   onChange(value) {
-
-    // var formatter = phoneUtil.getAsYouTypeFormatter(this.state.country.cca2);
-    console.log(this.state.country.cca2);
     var formatter = new AsYouTypeFormatter(this.state.country.cca2);
     var newNum = '';
-    // value.phone_number.forEach((i) => newNum = formatter.inputDigit(i))
-    console.log(value.phone_number);
     var num = value.phone_number;
     if (num)
     {
       num = num.toString();
       num = num.replace(/\D/g, '');
-      console.log("num = " + num);
       for (var i = 0; i < num.length; i++)
       {
         newNum = formatter.inputDigit(num[i]);
 
       }
-      console.log(newNum);
-      // value.phone_number.forEach(function(i) {} )
 
       var newState = {...value, phone_number: newNum};
-      console.log(newState);
-      this.setState({value: newState}, (state) => console.log(state));
+      this.setState({value: newState});
     }
-    // Parse number with country code.
-    // this.state.value.phone_number = phoneUtil.parse(value.phone_number, this.state.country.cca2);
-
-    // this.setState({value: value}, function (){
-    //   if (this.state.value.verify_password)
-    //   {
-    //     if (!samePasswords(this.state.value)) {
-    //       this.setState({options: t.update(this.state.options, {
-    //         fields: {
-    //           verify_password: {
-    //             hasError: { $set: true }
-    //           }
-    //         }
-    //       })});
-    //     }
-    //     else {
-    //       this.setState({options: t.update(this.state.options, {
-    //         fields: {
-    //           verify_password: {
-    //             hasError: { $set: false }
-    //           }
-    //         }
-    //       })});
-    //     }
-    //   }
-    // });
   }
 
   render () {
@@ -248,7 +208,7 @@ class RegisterFloto extends React.Component {
         <View style={styles.country}>
           <CountryPicker
             ref={countryPicker => this.countryPicker = countryPicker}
-            onChange={(value)=> console.log(value) || this.setState({country: value}, ()=>this.onChange(this.state.value))}
+            onChange={(value)=> this.setState({country: value}, ()=>this.onChange(this.state.value))}
             cca2={this.state.country.cca2}
             translation='eng'
           />
