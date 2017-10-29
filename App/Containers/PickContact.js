@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import { Alert, StyleSheet, FlatList, TextInput, Image, ScrollView, View, Text, TouchableHighlight, TouchableOpacity, Picker, Button } from 'react-native'
-import { ImagePicker } from 'expo';
+import { ImagePicker, Contacts, Permissions } from 'expo';
 import { MaterialIcons, Ionicons, Foundation } from '@expo/vector-icons';
 
 import { connect } from 'react-redux'
@@ -36,7 +36,6 @@ type PickContactProps = {
 
 class PickContact extends React.Component {
 
-  // JG 10/20/17: No title when taking picture
   static navigationOptions = ({navigation}) => ({
     title: "Pick Contact",
     headerLeft: (<HeaderBackButton onPress={ () => { Alert.alert(
@@ -56,48 +55,92 @@ class PickContact extends React.Component {
 
   constructor (props: PickContactProps) {
     super(props);
-    this.state = {};
+    this.state = {contacts: null};
   }
 
   componentWillReceiveProps (newProps) {
     this.forceUpdate()
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    const permission = await Permissions.askAsync(Permissions.CONTACTS);
+    if (permission.status !== 'granted') {
+      return;
+    }
+    const contacts = await Contacts.getContactsAsync({fields:[Contacts.PHONE_NUMBERS], pageSize: 100});
+    console.log(contacts);
+    this.setState({contacts: contacts});
+  }
 
+  renderItem({item}) {
+    return (
+      <View style={{height: 35, marginHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+        <View style={{}}>
+          <Text style={{fontSize: 11}}>
+            {item.firstName}
+          </Text>
+          <Text style={{color: 'gray', fontSize: 8}}>
+            {item["phoneNumbers"][0]["number"]}
+          </Text>
+        </View>
+        <View style={{}}>
+          <Text style={{fontSize: 11}}>
+            Select
+          </Text>
+        </View>
+      </View>
+
+    );
   }
 
   render() {
-    const img = this.props.navigation.state.params.pickerResult;
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <View
-        style={{
-          marginTop: 30,
-          width: 250,
-          borderRadius: 3,
-          elevation: 2,
-          shadowColor: 'rgba(0,0,0,1)',
-          shadowOpacity: 0.2,
-          shadowOffset: { width: 4, height: 4 },
-          shadowRadius: 5,
-        }}>
-        <View
-          style={{
-            borderTopRightRadius: 3,
-            borderTopLeftRadius: 3,
-            overflow: 'hidden',
-          }}>
-          <Image source={{ uri: img.uri }} style={{ width: 250, height: 250 }} />
+    if (this.state.contacts == null) {
+      return (
+        <View>
+          <Text>Loading</Text>
         </View>
-
-        <Text
-          style={{ paddingVertical: 10, paddingHorizontal: 10 }}>
-          {img.uri}
-        </Text>
+      );
+    }
+    return (
+      <View>
+        <FlatList
+          data={this.state.contacts.data}
+          renderItem={this.renderItem.bind(this)}
+          keyExtractor={(item, index) => index}
+        />
       </View>
-    </View>
     );
+
+    // const img = this.props.navigation.state.params.pickerResult;
+    // return (
+    //   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    //   <View
+    //     style={{
+    //       marginTop: 30,
+    //       width: 250,
+    //       borderRadius: 3,
+    //       elevation: 2,
+    //       shadowColor: 'rgba(0,0,0,1)',
+    //       shadowOpacity: 0.2,
+    //       shadowOffset: { width: 4, height: 4 },
+    //       shadowRadius: 5,
+    //     }}>
+    //     <View
+    //       style={{
+    //         borderTopRightRadius: 3,
+    //         borderTopLeftRadius: 3,
+    //         overflow: 'hidden',
+    //       }}>
+    //       <Image source={{ uri: img.uri }} style={{ width: 250, height: 250 }} />
+    //     </View>
+    //
+    //     <Text
+    //       style={{ paddingVertical: 10, paddingHorizontal: 10 }}>
+    //       {img.uri}
+    //     </Text>
+    //   </View>
+    // </View>
+    // );
   }
 }
 

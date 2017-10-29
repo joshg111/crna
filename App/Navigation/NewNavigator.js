@@ -30,7 +30,7 @@ const Navigator = StackNavigator({
 
 },
 {
-  initialRouteName: "StartupScreen"
+  initialRouteName: "PickContact"
 });
 
 export default Navigator;
