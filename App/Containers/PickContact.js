@@ -1,26 +1,55 @@
 // @flow
 import React from 'react'
-import { Alert, StyleSheet, FlatList, TextInput, Image, ScrollView, View, Text, TouchableHighlight, TouchableOpacity, Picker, Button } from 'react-native'
+import { Alert, StyleSheet, FlatList, TextInput, Image, ScrollView, View, Text, TouchableHighlight, TouchableOpacity, Picker, Button, Switch } from 'react-native'
 import { ImagePicker, Contacts, Permissions } from 'expo';
 import { MaterialIcons, Ionicons, Foundation } from '@expo/vector-icons';
 
 import { connect } from 'react-redux'
 import ActivateUserActions from '../Redux/ActivateUserRedux'
 import { NavigationActions, HeaderBackButton } from 'react-navigation'
+import Immutable from 'seamless-immutable'
 import { Colors, Metrics, ApplicationStyles } from '../Themes/'
 
-// import { Actions as NavigationActions } from 'react-native-router-flux'
 
-// 8/20/17: We should use a different button, since exponent may not
-// easily support react-native-material-design. Commenting out for now.
-// import { Button } from 'react-native-material-design'
+class MyListItem extends React.PureComponent {
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log(this.props);
+  //   console.log(nextProps);
+  //   console.log(this.props === nextProps);
+  //   console.log(this.state);
+  //   console.log(nextState);
+  //   console.log(this.state === nextState);
+  //
+  //   return (this.props === nextProps || this.state === nextState)
+  // }
 
-// import {styles} from './Styles/MyFlowsStyle'
-import FlowCard from './FlowCard'
+  _onPress() {
+    this.props.onPressItem(this.props.id);
+  }
 
-import LoginActions from '../Redux/LoginRedux'
+  render() {
+    console.log("render item id - " + this.props.id);
+    return (
+      <View style={{height: 35, marginHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+        <View style={{}}>
+          <Text style={{fontSize: 11}}>
+            {this.props.firstName}
+          </Text>
+          <Text style={{color: 'gray', fontSize: 8}}>
+            {this.props.phoneNumber}
+          </Text>
+        </View>
+        <View style={{}}>
+          <Switch
+            onValueChange={this._onPress.bind(this)}
+            value={this.props.selected}
+          />
+        </View>
+      </View>
 
-import t from 'tcomb-form-native'
+    );
+  }
+}
 
 const resetAction = NavigationActions.reset({
   index: 0,
@@ -51,11 +80,14 @@ class PickContact extends React.Component {
 
   props: PickContactProps
 
-  state: {}
+  state: {
+    contacts: Object,
+    picked: Object
+  }
 
   constructor (props: PickContactProps) {
     super(props);
-    this.state = {contacts: null};
+    this.state = Immutable({ contacts: {}, picked: {} });
   }
 
   componentWillReceiveProps (newProps) {
@@ -68,28 +100,38 @@ class PickContact extends React.Component {
       return;
     }
     const contacts = await Contacts.getContactsAsync({fields:[Contacts.PHONE_NUMBERS], pageSize: 100});
-    console.log(contacts);
-    this.setState({contacts: contacts});
+    // console.log(contacts);
+    let newContacts = contacts.data.filter((e, index, arr)=>{
+      if(index > 0) {
+        return arr[index-1].id != e.id;
+      }
+      else {
+        return true;
+      }
+    });
+    let contactMap = {};
+    newContacts.forEach((e)=>{
+      contactMap[e.id] = e;
+    });
+    console.log(contactMap);
+    this.setState(this.state.merge({contacts: newContacts}));
+  }
+
+  onPressItem = (id: string) => {
+    let picked = {...this.state.picked, [id]: !this.state.picked[id]};
+    this.setState({picked});
   }
 
   renderItem({item}) {
+    // console.log(item)
     return (
-      <View style={{height: 35, marginHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-        <View style={{}}>
-          <Text style={{fontSize: 11}}>
-            {item.firstName}
-          </Text>
-          <Text style={{color: 'gray', fontSize: 8}}>
-            {item["phoneNumbers"][0]["number"]}
-          </Text>
-        </View>
-        <View style={{}}>
-          <Text style={{fontSize: 11}}>
-            Select
-          </Text>
-        </View>
-      </View>
-
+      <MyListItem
+        id={item.id}
+        onPressItem={this.onPressItem}
+        selected={!!this.state.picked[item.id]}
+        phoneNumber={item.phoneNumbers[0].number}
+        firstName={item.firstName}
+      />
     );
   }
 
@@ -104,8 +146,9 @@ class PickContact extends React.Component {
     return (
       <View>
         <FlatList
-          data={this.state.contacts.data}
+          data={this.state.contacts}
           renderItem={this.renderItem.bind(this)}
+          extraData={this.state}
           keyExtractor={(item, index) => index}
         />
       </View>
