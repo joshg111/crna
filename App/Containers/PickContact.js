@@ -23,8 +23,8 @@ class MyListItem extends React.PureComponent {
   //   return (this.props === nextProps || this.state === nextState)
   // }
 
-  _onPress() {
-    this.props.onPressItem(this.props.id);
+  _onPress(value) {
+    this.props.onPressItem(this.props.id, value);
   }
 
   render() {
@@ -63,6 +63,8 @@ type PickContactProps = {
   navigation: Object
 }
 
+let contactMap = {};
+
 class PickContact extends React.Component {
 
   static navigationOptions = ({navigation}) => ({
@@ -87,7 +89,7 @@ class PickContact extends React.Component {
 
   constructor (props: PickContactProps) {
     super(props);
-    this.state = Immutable({ contacts: {}, picked: {} });
+    this.state = Immutable({ contacts: {}, picked: [] });
   }
 
   componentWillReceiveProps (newProps) {
@@ -109,7 +111,7 @@ class PickContact extends React.Component {
         return true;
       }
     });
-    let contactMap = {};
+
     newContacts.forEach((e)=>{
       contactMap[e.id] = e;
     });
@@ -117,8 +119,21 @@ class PickContact extends React.Component {
     this.setState(this.state.merge({contacts: newContacts}));
   }
 
-  onPressItem = (id: string) => {
-    let picked = {...this.state.picked, [id]: !this.state.picked[id]};
+  onPressItem = (id: string, value: boolean) => {
+    let picked = Immutable.asMutable(this.state.picked);
+    console.log(picked);
+    if(value) {
+      picked.push(id)
+    }
+    else {
+      var index = this.state.picked.indexOf(id)
+      if(index > -1) {
+        picked.splice(index, 1) // Remove 1 item at index
+      }
+    }
+    // let picked = {...this.state.picked, [id]: !this.state.picked[id]};
+    console.log(picked);
+    picked = Immutable(picked);
     this.setState({picked});
   }
 
@@ -128,11 +143,39 @@ class PickContact extends React.Component {
       <MyListItem
         id={item.id}
         onPressItem={this.onPressItem}
-        selected={!!this.state.picked[item.id]}
+        selected={this.state.picked.indexOf(item.id) > -1}
         phoneNumber={item.phoneNumbers[0].number}
         firstName={item.firstName}
       />
     );
+  }
+
+  renderPicked() {
+
+    // this.state.picked.forEach((e)=>{
+    //     picked.push(contactMap[e].firstName)
+    // });
+    console.log("now");
+    console.log(this.state.picked);
+    var picked = Immutable.asMutable(this.state.picked);
+    console.log("here");
+    console.log(picked);
+    picked = picked.map((e) => {
+      return (contactMap[e].firstName);
+    })
+    console.log(picked);
+    if(picked.length > 0) {
+      return (
+        <View style={{flex:.05}}>
+          <Text style={{height:50}}>
+            {picked.reduce((accumulator, current)=>{
+              return (accumulator + ', ' + current)
+            })}
+          </Text>
+        </View>
+        );
+
+    }
   }
 
   render() {
@@ -144,13 +187,19 @@ class PickContact extends React.Component {
       );
     }
     return (
-      <View>
-        <FlatList
-          data={this.state.contacts}
-          renderItem={this.renderItem.bind(this)}
-          extraData={this.state}
-          keyExtractor={(item, index) => index}
-        />
+      <View style={{flex:1, flexDirection: "column"}}>
+        <View style={{flex:1}}>
+          <FlatList
+            data={this.state.contacts}
+            renderItem={this.renderItem.bind(this)}
+            extraData={this.state}
+            keyExtractor={(item, index) => index}
+          />
+        </View>
+        {
+          this.renderPicked()
+        }
+
       </View>
     );
 
