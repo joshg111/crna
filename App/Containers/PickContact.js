@@ -12,16 +12,6 @@ import { Colors, Metrics, ApplicationStyles } from '../Themes/'
 
 
 class MyListItem extends React.PureComponent {
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log(this.props);
-  //   console.log(nextProps);
-  //   console.log(this.props === nextProps);
-  //   console.log(this.state);
-  //   console.log(nextState);
-  //   console.log(this.state === nextState);
-  //
-  //   return (this.props === nextProps || this.state === nextState)
-  // }
 
   _onPress(value) {
     this.props.onPressItem(this.props.id, value);
@@ -33,7 +23,7 @@ class MyListItem extends React.PureComponent {
       <View style={{height: 35, marginHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
         <View style={{}}>
           <Text style={{fontSize: 11}}>
-            {this.props.firstName}
+            {this.props.firstName + (this.props.lastName ? " " + this.props.lastName : '')}
           </Text>
           <Text style={{color: 'gray', fontSize: 8}}>
             {this.props.phoneNumber}
@@ -51,6 +41,101 @@ class MyListItem extends React.PureComponent {
   }
 }
 
+class Node {
+  data: string
+  children: Object
+  word: string
+
+  constructor(data: string) {
+    this.data = data;
+    this.children = {};
+    this.word = '';
+
+  }
+};
+
+function create_prefix_tree(d) {
+  console.log("calling create_prefix_tree")
+  var head = new Node('');
+  var curr = head;
+  for (var word of Object.keys(d)) {
+    console.log("word = " + word);
+    curr = head;
+
+    for (var char of word.split('')) {
+
+      if (!(char.toLowerCase() in curr.children)) {
+
+        var n = new Node(char);
+        n.word = curr.word + char;
+        curr.children[char.toLowerCase()] = n;
+      }
+
+      curr = curr.children[char.toLowerCase()];
+    }
+  }
+  return head;
+};
+
+function find_words_static(tree, d, prefix) {
+  var curr = tree;
+  var res = [];
+  prefix = prefix.toLowerCase();
+  for (var char of prefix.split('')) {
+    if (!(char in curr.children)) {
+
+      return [];
+    }
+    curr = curr.children[char];
+  }
+
+  var stack = [];
+  stack.push(curr);
+  while (stack.length > 0) {
+    curr = stack.pop();
+    if (curr.word in d) {
+
+      res.push(d[curr.word]);
+    }
+    for (var node of Object.keys(curr.children).map(function(key) {return curr.children[key]})) {
+      stack.push(node);
+
+    }
+  }
+
+  return res;
+};
+
+class Finder {
+
+  d: Object
+  tree: Object
+
+  constructor(d: Object) {
+    console.log("constructor")
+    this.d = d;
+    this.tree = create_prefix_tree(this.d);
+  }
+
+  find_words(prefix: string) {
+    return find_words_static(this.tree, this.d, prefix);
+  }
+
+
+};
+
+function removeDupContacts(contacts) {
+  var contactMap = {};
+  return (contacts.filter((e, index, arr)=>{
+    if (!(e.id in contactMap)) {
+      contactMap[e.id] = true;
+      return true;
+    }
+
+    return false;
+  }));
+};
+
 const resetAction = NavigationActions.reset({
   index: 0,
   actions: [
@@ -64,6 +149,8 @@ type PickContactProps = {
 }
 
 let contactMap = {};
+let firstsFinder;
+let lastsFinder;
 
 class PickContact extends React.Component {
 
@@ -83,13 +170,14 @@ class PickContact extends React.Component {
   props: PickContactProps
 
   state: {
-    contacts: Object,
-    picked: Object
+    contacts: Array,
+    picked: Object,
+    text: string
   }
 
   constructor (props: PickContactProps) {
     super(props);
-    this.state = Immutable({ contacts: {}, picked: [] });
+    this.state = Immutable({ contacts: {}, picked: [], text: '' });
   }
 
   componentWillReceiveProps (newProps) {
@@ -101,21 +189,40 @@ class PickContact extends React.Component {
     if (permission.status !== 'granted') {
       return;
     }
-    const contacts = await Contacts.getContactsAsync({fields:[Contacts.PHONE_NUMBERS], pageSize: 100});
-    // console.log(contacts);
-    let newContacts = contacts.data.filter((e, index, arr)=>{
-      if(index > 0) {
-        return arr[index-1].id != e.id;
+    const contacts = await Contacts.getContactsAsync({fields:[Contacts.PHONE_NUMBERS], pageSize: 1000});
+
+    // let newContacts = contacts.data.filter((e, index, arr)=>{
+    //   if(index > 0) {
+    //     return arr[index-1].id != e.id;
+    //   }
+    //   else {
+    //     return true;
+    //   }
+    // });
+
+    let newContacts = removeDupContacts(contacts.data);
+
+    newContacts = newContacts.sort((a,b) => {
+      if (a.firstName > b.firstName) {
+        return -1;
       }
-      else {
-        return true;
+      else if (a.firstName < b.firstName) {
+        return 1;
       }
+      return 0;
     });
 
+    var firstsContactMap = {};
+    var lastsContactMap = {};
     newContacts.forEach((e)=>{
       contactMap[e.id] = e;
+      firstsContactMap[e.firstName + " " + e.lastName] = e;
+      lastsContactMap[e.lastName] = e;
     });
-    console.log(contactMap);
+
+    firstsFinder = new Finder(firstsContactMap);
+    lastsFinder = new Finder(lastsContactMap);
+
     this.setState(this.state.merge({contacts: newContacts}));
   }
 
@@ -131,8 +238,6 @@ class PickContact extends React.Component {
         picked.splice(index, 1) // Remove 1 item at index
       }
     }
-    // let picked = {...this.state.picked, [id]: !this.state.picked[id]};
-    console.log(picked);
     picked = Immutable(picked);
     this.setState({picked});
   }
@@ -146,22 +251,15 @@ class PickContact extends React.Component {
         selected={this.state.picked.indexOf(item.id) > -1}
         phoneNumber={item.phoneNumbers[0].number}
         firstName={item.firstName}
+        lastName={item.lastName}
       />
     );
   }
 
   renderPicked() {
-
-    // this.state.picked.forEach((e)=>{
-    //     picked.push(contactMap[e].firstName)
-    // });
-    console.log("now");
-    console.log(this.state.picked);
     var picked = Immutable.asMutable(this.state.picked);
-    console.log("here");
-    console.log(picked);
     picked = picked.map((e) => {
-      return (contactMap[e].firstName);
+      return (contactMap[e].firstName + (contactMap[e].lastName ? " " + contactMap[e].lastName : ''));
     })
     console.log(picked);
     if(picked.length > 0) {
@@ -178,6 +276,15 @@ class PickContact extends React.Component {
     }
   }
 
+  onChangeText(text) {
+    var res = firstsFinder.find_words(text);
+    res = res.concat(lastsFinder.find_words(text));
+    res = removeDupContacts(res);
+
+    this.setState({text,
+      contacts: res});
+  }
+
   render() {
     if (this.state.contacts == null) {
       return (
@@ -189,6 +296,13 @@ class PickContact extends React.Component {
     return (
       <View style={{flex:1, flexDirection: "column"}}>
         <View style={{flex:1}}>
+          <TextInput
+            style={{height: 40, borderColor: 'gray', margin: 5}}
+            onChangeText={this.onChangeText.bind(this)}
+            placeholder={"Search"}
+            value={this.state.text}
+            autoFocus={true}
+          />
           <FlatList
             data={this.state.contacts}
             renderItem={this.renderItem.bind(this)}
