@@ -18,7 +18,6 @@ class MyListItem extends React.PureComponent {
   }
 
   render() {
-    console.log("render item id - " + this.props.id);
     return (
       <View style={{height: 35, marginHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
         <View style={{}}>
@@ -55,11 +54,10 @@ class Node {
 };
 
 function create_prefix_tree(d) {
-  console.log("calling create_prefix_tree")
+
   var head = new Node('');
   var curr = head;
   for (var word of Object.keys(d)) {
-    console.log("word = " + word);
     curr = head;
 
     for (var char of word.split('')) {
@@ -112,7 +110,6 @@ class Finder {
   tree: Object
 
   constructor(d: Object) {
-    console.log("constructor")
     this.d = d;
     this.tree = create_prefix_tree(this.d);
   }
@@ -228,7 +225,6 @@ class PickContact extends React.Component {
 
   onPressItem = (id: string, value: boolean) => {
     let picked = Immutable.asMutable(this.state.picked);
-    console.log(picked);
     if(value) {
       picked.push(id)
     }
@@ -243,7 +239,6 @@ class PickContact extends React.Component {
   }
 
   renderItem({item}) {
-    // console.log(item)
     return (
       <MyListItem
         id={item.id}
@@ -261,7 +256,6 @@ class PickContact extends React.Component {
     picked = picked.map((e) => {
       return (contactMap[e].firstName + (contactMap[e].lastName ? " " + contactMap[e].lastName : ''));
     })
-    console.log(picked);
     if(picked.length > 0) {
       return (
         <View style={{flex:.05}}>
