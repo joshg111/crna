@@ -22,7 +22,7 @@ class MyListItem extends React.PureComponent {
       <View style={{height: 35, marginHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
         <View style={{}}>
           <Text style={{fontSize: 11}}>
-            {this.props.firstName + (this.props.lastName ? " " + this.props.lastName : '')}
+            {(this.props.firstName ? this.props.firstName + " " : '') + (this.props.lastName ? this.props.lastName : '')}
           </Text>
           <Text style={{color: 'gray', fontSize: 8}}>
             {this.props.phoneNumber}
@@ -65,7 +65,7 @@ function create_prefix_tree(d) {
       if (!(char.toLowerCase() in curr.children)) {
 
         var n = new Node(char);
-        n.word = curr.word + char;
+        n.word = curr.word + char.toLowerCase();
         curr.children[char.toLowerCase()] = n;
       }
 
@@ -91,6 +91,7 @@ function find_words_static(tree, d, prefix) {
   stack.push(curr);
   while (stack.length > 0) {
     curr = stack.pop();
+    // console.log("word = ", curr.word);
     if (curr.word in d) {
 
       res.push(d[curr.word]);
@@ -133,6 +134,22 @@ function removeDupContacts(contacts) {
   }));
 };
 
+function sortContacts(newContacts) {
+  return (newContacts.sort((a,b) => {
+    var aFirstName = ((a.firstName ? a.firstName : '') + (a.lastName ? a.lastName : '')).toLowerCase();
+
+    var bFirstName = ((b.firstName ? b.firstName : '') + (b.lastName ? b.lastName : '')).toLowerCase();
+
+    if (aFirstName > bFirstName) {
+      return 1;
+    }
+    else if (aFirstName < bFirstName) {
+      return -1;
+    }
+    return 0;
+  }));
+}
+
 const resetAction = NavigationActions.reset({
   index: 0,
   actions: [
@@ -145,9 +162,13 @@ type PickContactProps = {
   navigation: Object
 }
 
+let newContacts = []
 let contactMap = {};
 let firstsFinder;
 let lastsFinder;
+let firstsContactMap = {};
+let lastsContactMap = {};
+let ITEM_HEIGHT = 35;
 
 class PickContact extends React.Component {
 
@@ -167,7 +188,7 @@ class PickContact extends React.Component {
   props: PickContactProps
 
   state: {
-    contacts: Array,
+    contacts: Array<string>,
     picked: Object,
     text: string
   }
@@ -197,24 +218,19 @@ class PickContact extends React.Component {
     //   }
     // });
 
-    let newContacts = removeDupContacts(contacts.data);
+    newContacts = removeDupContacts(contacts.data);
 
-    newContacts = newContacts.sort((a,b) => {
-      if (a.firstName > b.firstName) {
-        return -1;
-      }
-      else if (a.firstName < b.firstName) {
-        return 1;
-      }
-      return 0;
-    });
+    newContacts = sortContacts(newContacts);
 
-    var firstsContactMap = {};
-    var lastsContactMap = {};
+    // console.log("newContacts = ", newContacts);
+
     newContacts.forEach((e)=>{
       contactMap[e.id] = e;
-      firstsContactMap[e.firstName + " " + e.lastName] = e;
-      lastsContactMap[e.lastName] = e;
+      var eFirstLastName = ((e.firstName ? e.firstName : '') + (e.lastName ? " " + e.lastName : ''));
+      firstsContactMap[eFirstLastName.toLowerCase()] = e;
+      if (e.lastName) {
+        lastsContactMap[e.lastName.toLowerCase()] = e;
+      }
     });
 
     firstsFinder = new Finder(firstsContactMap);
@@ -274,6 +290,7 @@ class PickContact extends React.Component {
     var res = firstsFinder.find_words(text);
     res = res.concat(lastsFinder.find_words(text));
     res = removeDupContacts(res);
+    res = sortContacts(res);
 
     this.setState({text,
       contacts: res});
@@ -302,6 +319,14 @@ class PickContact extends React.Component {
             renderItem={this.renderItem.bind(this)}
             extraData={this.state}
             keyExtractor={(item, index) => index}
+            // initialNumToRender={500}
+            // maxToRenderPerBatch={10}
+            // windowSize={1000}
+            // updateCellsBatchingPeriod={.1}
+            getItemLayout={(data, index) => (
+              {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
+            )}
+
           />
         </View>
         {
