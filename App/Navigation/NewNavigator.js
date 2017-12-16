@@ -12,6 +12,8 @@ import FlowDetails from '../Containers/FlowDetails'
 import FlowCard from '../Containers/FlowCard'
 import CreateFlowScreen from '../Containers/CreateFlowScreen'
 import PickContact from '../Containers/PickContact'
+import CurrentContacts from '../Containers/CurrentContacts'
+import ReviewFlow from '../Containers/ReviewFlow'
 import LoginActions from '../Redux/LoginRedux'
 import { connect } from 'react-redux'
 import { StackNavigator } from 'react-navigation';
@@ -24,13 +26,15 @@ const Navigator = StackNavigator({
   LoginScreen: { screen: LoginScreen },
   CreateFlowScreen: { screen: CreateFlowScreen },
   PickContact: { screen: PickContact },
+  CurrentContacts: { screen: CurrentContacts },
+  ReviewFlow: { screen: ReviewFlow },
   FlowDetails: { screen: FlowDetails },
   FlowCard: {screen: FlowCard}
 
 
 },
 {
-  initialRouteName: "PickContact"
+  initialRouteName: "CurrentContacts"
 });
 
 export default Navigator;

@@ -13,10 +13,6 @@ import { Colors, Metrics, ApplicationStyles } from '../Themes/'
 
 class MyListItem extends React.PureComponent {
 
-  _onPress(value) {
-    this.props.onPressItem(this.props.id, value);
-  }
-
   render() {
     return (
       <View style={{height: 35, marginHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -28,12 +24,7 @@ class MyListItem extends React.PureComponent {
             {this.props.phoneNumber}
           </Text>
         </View>
-        <View style={{}}>
-          <Switch
-            onValueChange={this._onPress.bind(this)}
-            value={this.props.selected}
-          />
-        </View>
+
       </View>
 
     );
@@ -239,31 +230,24 @@ class PickContact extends React.Component {
     this.setState(this.state.merge({contacts: newContacts}));
   }
 
-  onPressItem = (id: string, value: boolean) => {
-    let picked = Immutable.asMutable(this.state.picked);
-    if(value) {
-      picked.push(id)
-    }
-    else {
-      var index = this.state.picked.indexOf(id)
-      if(index > -1) {
-        picked.splice(index, 1) // Remove 1 item at index
-      }
-    }
-    picked = Immutable(picked);
-    this.setState({picked});
+  onPressItem = (id: string) => {
+    this.props.navigation.state.params.onSelect(contactMap[id]);
+    console.log("goBack");
+    this.props.navigation.goBack();
   }
 
   renderItem({item}) {
     return (
+      <TouchableOpacity
+        onPress={this.onPressItem.bind(this, item.id)}>
       <MyListItem
         id={item.id}
         onPressItem={this.onPressItem}
-        selected={this.state.picked.indexOf(item.id) > -1}
         phoneNumber={item.phoneNumbers[0].number}
         firstName={item.firstName}
         lastName={item.lastName}
       />
+    </TouchableOpacity>
     );
   }
 

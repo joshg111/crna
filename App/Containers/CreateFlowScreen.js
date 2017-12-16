@@ -73,7 +73,7 @@ class CreateFlowScreen extends React.Component {
 
   _handleImagePicked = (pickerResult) => {
     if (!pickerResult.cancelled) {
-      this.props.navigation.navigate('PickContact', {pickerResult: pickerResult});
+      this.props.navigation.navigate('CurrentContacts', {pickerResult: pickerResult});
     }
     else {
       this.props.navigation.goBack();
